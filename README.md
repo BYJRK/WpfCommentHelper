@@ -1,5 +1,5 @@
-# WPF Comment Helper
+# 作业批改助手
 
-This (maybe) helpful for TA (teaching assistant) works to mark assignments and give comments.
+这款 WPF 小软件或许会对大学助教群体有所帮助吧……
 
 ![](example.png)
