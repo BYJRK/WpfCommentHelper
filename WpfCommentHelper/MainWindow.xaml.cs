@@ -18,6 +18,9 @@ namespace WpfCommentHelper
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 如果已经打开了 XML 文档，则保存文件路径，用于重新读取（重置）
+        /// </summary>
         string FileName { get; set; }
         /// <summary>
         /// 读取 XML 文件，生成对应的批改界面
@@ -203,6 +206,11 @@ namespace WpfCommentHelper
 
         #region 界面事件
 
+        /// <summary>
+        /// 打开 XML 文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Open_Click(object sender, RoutedEventArgs e)
         {
             Win32.OpenFileDialog open = new Win32.OpenFileDialog();
@@ -213,6 +221,11 @@ namespace WpfCommentHelper
                 ReadXml(FileName);
             }
         }
+        /// <summary>
+        /// 保存当前的批改为 XML 文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             Win32.SaveFileDialog save = new Win32.SaveFileDialog();
@@ -225,6 +238,11 @@ namespace WpfCommentHelper
                 WriteXml(save.FileName);
             }
         }
+        /// <summary>
+        /// 重置左侧所有选项（其实是重新读取对应 XML 文档）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cut_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(FileName)) return;
@@ -235,6 +253,11 @@ namespace WpfCommentHelper
             // 回到顶部
             CommentScroll.ScrollToHome();
         }
+        /// <summary>
+        /// 是否显示详尽版批语
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Verbose_Click(object sender, RoutedEventArgs e)
         {
             ToggleButton b = sender as ToggleButton;

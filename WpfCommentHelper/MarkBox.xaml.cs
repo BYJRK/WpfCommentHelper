@@ -32,7 +32,13 @@ namespace WpfCommentHelper
             get => ScoreBox.Text;
             set => ScoreBox.Text = value;
         }
+        /// <summary>
+        /// 最高分数（同时也是默认值）
+        /// </summary>
         public int Max { get; set; }
+        /// <summary>
+        /// 最低分数
+        /// </summary>
         public int Min { get; set; }
 
         /// <summary>
