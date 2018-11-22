@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:WpfCommentHelper"
         mc:Ignorable="d"
         FontSize="16"
-        Title="CommentHelper" Height="800" Width="1200">
+        FontFamily="Microsoft Yahei"
+        WindowStartupLocation="CenterScreen"
+        Title="作业批改助手" Height="800" Width="1200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -14,7 +16,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="355"/>
         </Grid.ColumnDefinitions>
         <Border Margin="5,5,5,4.5" BorderThickness="1" BorderBrush="Gray" Grid.RowSpan="2">
             <ScrollViewer Name="CommentScroll" VerticalScrollBarVisibility="Auto"
@@ -52,13 +54,14 @@
                 <Style TargetType="Button">
                     <Setter Property="Margin" Value="5,0,0,0"/>
                     <Setter Property="Background" Value="White"/>
-                    <Setter Property="Width" Value="80"/>
+                    <Setter Property="Width" Value="85"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
                 </Style>
             </StackPanel.Resources>
-            <ToggleButton Content="Verbose" Width="80" Background="White" Click="Verbose_Click"/>
-            <Button Content="Open" Click="Open_Click"/>
-            <Button Content="Save" Click="Save_Click"/>
-            <Button Content="Reset" Click="Cut_Click"/>
+            <ToggleButton Content="详细" Width="80" Background="White" Click="Verbose_Click"/>
+            <Button Content="打开" Click="Open_Click"/>
+            <Button Content="保存" Click="Save_Click"/>
+            <Button Content="重置" Click="Cut_Click"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -13,11 +13,6 @@ namespace WpfCommentHelper
         {
             InitializeComponent();
         }
-
-        public static bool Verbose { get; set; } = false;
-        public string Left { get; set; } = Environment.NewLine;
-        public string Right { get; set; } = string.Empty;
-
         public TaskBox(string label, string score, string desc = null, string left = null, string right = null) : this()
         {
             TitleBox.Content = label;
@@ -30,9 +25,35 @@ namespace WpfCommentHelper
                 Left = left;
             if (!(right is null))
                 Right = right;
-            CalculateScore(this, null);
+            //CalculateScore(this, null);
         }
+        /// <summary>
+        /// 是否显示详细信息
+        /// </summary>
+        public static bool Verbose { get; set; } = false;
+        /// <summary>
+        /// 输出评语时，出现在文本左侧的内容（默认为换行符）
+        /// </summary>
+        public string Left { get; set; } = Environment.NewLine;
+        /// <summary>
+        /// 输出评语时，出现在文本左侧的内容（默认为空）
+        /// </summary>
+        public string Right { get; set; } = string.Empty;
 
+        /// <summary>
+        /// 获取当前题目的分数
+        /// </summary>
+        public string Score
+        {
+            get
+            {
+                CalculateScore(this, null);
+                return ScoreBox.Text;
+            }
+        }
+        /// <summary>
+        /// 获取该题目的评语
+        /// </summary>
         public string Comment
         {
             get
@@ -99,6 +120,9 @@ namespace WpfCommentHelper
                 return sb.ToString();
             }
         }
+        /// <summary>
+        /// 判断该题目是否拥有可显示的评语
+        /// </summary>
         public bool HasComment
         {
             get
@@ -125,6 +149,11 @@ namespace WpfCommentHelper
             }
         }
 
+        /// <summary>
+        /// 计算当前题目的分数（会在任意子项目的分数发生变化时被调用）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void CalculateScore(object sender, RoutedEventArgs e)
         {
             int score = 0;
@@ -135,24 +164,32 @@ namespace WpfCommentHelper
                 int value = 0;
                 switch (item)
                 {
+                    // TaskBox 的分数为自己的基础分数加上所有子项的分数
+                    case TaskBox b:
+                        if (int.TryParse(b.Score, out value)) score += value;
+                        break;
+                    // CheckBox 只有在被选中时，所对应的分值才会产生意义
                     case CheckBox c:
                         if (!c.IsChecked.Value) continue;
                         else if (int.TryParse((string)c.Tag, out value)) score += value;
                         break;
+                    // 同上，RadioButton 只有在被选中时，所对应的分值才会产生意义
                     case RadioButton r:
                         if (!r.IsChecked.Value) continue;
                         else if (int.TryParse((string)r.Tag, out value)) score += value;
                         break;
-                    case TaskBox b:
-                        if (int.TryParse(b.ScoreBox.Text, out value)) score += value;
-                        break;
+                    // 不管是否被选中，MarkBox 的分数总是有意义的
                     case MarkBox m:
-                        if (int.TryParse(m.ScoreBox.Text, out value)) score += value;
+                        if (int.TryParse(m.Score, out value)) score += value;
                         break;
                 }
             }
             ScoreBox.Text = score.ToString();
         }
+        /// <summary>
+        /// 为当前题目添加新的子项目
+        /// </summary>
+        /// <param name="children"></param>
         public void AddChildren(params Control[] children)
         {
             foreach (var elem in children)
@@ -174,12 +211,18 @@ namespace WpfCommentHelper
                         break;
                     case MarkBox m:
                         m.ScoreBox.TextChanged += CalculateScore;
+                        m.ToolTip = m.Tag;
                         break;
                 }
                 Container.Children.Add(elem);
             }
             CalculateScore(this, null);
         }
+        /// <summary>
+        /// 判断某个选项栏是否被忽略（即没有被选中，或内容以“*”结束）
+        /// </summary>
+        /// <param name="button"></param>
+        /// <returns></returns>
         public bool IsIgnored(ToggleButton button)
         {
             string comment = (string)button.Content;

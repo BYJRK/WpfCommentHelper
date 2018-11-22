@@ -67,11 +67,14 @@ namespace WpfCommentHelper
         {
             if (CommentPanel.Children.Count == 0) return;
             TaskBox t = (TaskBox)CommentPanel.Children[0];
+            // 去掉开头结尾的空白（尤其是换行符）
             string str = t.Comment.Trim();
+            // 将评语结尾的分号改为句号
             if (str.EndsWith(";"))
                 str = str.TrimEnd(';') + ".";
+            // 如果显示详细信息，则在评语开头添加分数
             if (TaskBox.Verbose)
-                str = $"Overall Score [{t.ScoreBox.Text}]" + Environment.NewLine + str;
+                str = $"Overall Score [{t.Score}]{Environment.NewLine}{str}";
             CommentBox.Text = str;
         }
         /// <summary>
@@ -120,7 +123,7 @@ namespace WpfCommentHelper
                             c.Content = title;
                             c.Tag = score;
                             c.Click += UpdateComment;
-                            if (!(check is null))
+                            if (check != null)
                                 c.IsChecked = bool.Parse(check);
                             task.AddChildren(c);
                             break;
@@ -129,7 +132,7 @@ namespace WpfCommentHelper
                             r.Content = title;
                             r.Tag = score;
                             r.Click += UpdateComment;
-                            if (!(check is null))
+                            if (check != null)
                                 r.IsChecked = bool.Parse(check);
                             task.AddChildren(r);
                             break;
@@ -192,6 +195,7 @@ namespace WpfCommentHelper
                         xelem.SetAttributeValue("score", m.ScoreBox.Text);
                         if (m.TitleBox.IsChecked.Value)
                             xelem.SetAttributeValue("ischecked", true);
+                        root.Add(xelem);
                         break;
                 }
             }

@@ -17,11 +17,8 @@
                 <check title="扣分的第三个原因*" score="-5"/>
             </group>
         </subtask>
-        <subtask title="(c)" desc="小题还可以包含多个单选项，如下：" score="30">
-            <radio title="完全正确的结果*" score="0" ischecked="true"/>
-            <radio title="略有些错误的结果" score="-10"/>
-            <radio title="有明显错误的结果" score="-20"/>
-            <radio title="完全错误的结果" score="-30"/>
+        <subtask title="(c)" desc="下面的项目的分数可以自行编辑，也可以用滚轮快速调节。">
+            <mark title="整体印象分(0~10)" score="8" range="0,10"/>
         </subtask>
     </task>
 </task>

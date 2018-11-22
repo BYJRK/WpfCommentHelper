@@ -12,8 +12,6 @@ namespace WpfCommentHelper
         {
             InitializeComponent();
         }
-        public int Max { get; set; }
-        public int Min { get; set; }
         public MarkBox(string title, string range, string score) : this()
         {
             TitleBox.Content = title;
@@ -26,9 +24,25 @@ namespace WpfCommentHelper
             ScoreBox.Text = score;
         }
 
+        /// <summary>
+        /// 获取该打分项的分数
+        /// </summary>
+        public string Score
+        {
+            get => ScoreBox.Text;
+            set => ScoreBox.Text = value;
+        }
+        public int Max { get; set; }
+        public int Min { get; set; }
+
+        /// <summary>
+        /// 在分数栏被点选时，用方向键来调整分数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScoreBox_KeyUp(object sender, KeyEventArgs e)
         {
-            int score = int.Parse(ScoreBox.Text);
+            if (!int.TryParse(ScoreBox.Text, out int score)) return;
             switch (e.Key)
             {
                 case Key.Up:
@@ -39,8 +53,10 @@ namespace WpfCommentHelper
                 case Key.Left:
                     if (score > Min) score -= 1;
                     break;
+                case Key.Escape:
                 case Key.Delete:
-                    ScoreBox.Text = (string)Tag;
+                    string[] text = ((string)Tag).Split(',');
+                    Score = text[text.Length - 1];
                     return;
             }
             ScoreBox.Text = score.ToString();
