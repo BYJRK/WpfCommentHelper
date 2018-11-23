@@ -20,8 +20,18 @@ namespace WpfCommentHelper
             string[] scores = range.Split(',');
             Min = int.Parse(scores[0]);
             Max = int.Parse(scores[1]);
+            // 分数拖动条
+            ScoreSlider.Minimum = Min;
+            ScoreSlider.Maximum = Max;
+            double[] sliderRange = new double[Max - Min + 1];
+            for (int i = 0; i < Max - Min + 1; i++)
+                sliderRange[i] = Min + i;
+            ScoreSlider.Ticks = new System.Windows.Media.DoubleCollection(sliderRange);
             // 默认最高分
-            ScoreBox.Text = score;
+            if (string.IsNullOrEmpty(score))
+                Score = Max.ToString();
+            else
+                Score = score;
         }
 
         /// <summary>

@@ -7,10 +7,22 @@
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="400">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
         <CheckBox Name="TitleBox"
                   Content="Title Text"
                   VerticalContentAlignment="Center"/>
-        <TextBox Name="ScoreBox" 
+        <Slider Name="ScoreSlider"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                Width="100"
+                Maximum="20"
+                Minimum="0"
+                IsSnapToTickEnabled="True"
+                Value="{Binding ElementName=ScoreBox,Path=Text,Mode=TwoWay,FallbackValue=0}" SmallChange="1"/>
+        <TextBox Name="ScoreBox"
                  Width="40"
                  IsReadOnly="True"
                  Background="Transparent"
@@ -19,6 +31,7 @@
                  HorizontalContentAlignment="Center"
                  HorizontalAlignment="Right" 
                  KeyUp="ScoreBox_KeyUp"
-                 Text="10"/>
+                 Text="10"
+                 Grid.Column="1"/>
     </Grid>
 </UserControl>
