@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <task title="Lab 1" desc="这是整个项目的标题，通常只用来显示总分。">
+    <task title="欢迎使用本软件">
+        <check title="请点击右下角的「打开」，找到本地的 XML 文件，开始本次的作业批改工作。*"/>
+        <check title="点击「详细」，切换批语显示格式。*"/>
+        <check title="点击「重置」，会重置左侧的所有选项，从而批改下一位学生的作业。*"/>
+        <check title="下方为本软件的简易教程。*"/>
+    </task>
     <task title="Task 1" desc="这是第一个题目。\n题目不一定总是有类似这样的描述信息。\n描述信息支持诸如\\n的换行符。">
         <subtask title="(a)" desc="这是第一小题。与题目不同的是，在批语中，小题前不会有空行。\n小题通常有分数，表示这道题目的总分。\n小题中通常包含多个扣分项。" score="30">
             <check title="第一个扣分项" score="-10"/>
@@ -17,8 +23,14 @@
                 <check title="扣分的第三个原因*" score="-5"/>
             </group>
         </subtask>
-        <subtask title="(c)" desc="下面的项目的分数可以自行编辑，也可以用滚轮快速调节。">
-            <mark title="整体印象分(0~10)" score="8" range="0,10"/>
+        <subtask title="(c)" desc="本软件还支持加分制。除了使用 CheckBox，还可以使用 RadioButton。\n但是不推荐这种使用方法，除非针对不同分数档次需要制定不同的批语内容。\n比如：">
+            <radio title="完全正确的答案*" score="20" ischecked="true"/>
+            <radio title="有些错误的答案" score="10"/>
+            <radio title="答案错误"/>
+        </subtask>
+        <subtask title="P.S." desc="下面的项目的分数可以自行编辑，也可以用滚轮快速调节。">
+            <mark title="整体印象分" range="0,5"/>
+            <mark title="语法与单词拼写" range="0,5"/>
         </subtask>
     </task>
 </task>

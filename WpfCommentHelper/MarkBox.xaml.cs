@@ -1,5 +1,5 @@
-﻿using System.Windows.Controls;
-using System.Windows.Input;
+﻿using System;
+using System.Windows.Controls;
 
 namespace WpfCommentHelper
 {
@@ -14,17 +14,35 @@ namespace WpfCommentHelper
         }
         public MarkBox(string title, string range, string score) : this()
         {
-            TitleBox.Content = title;
-            Tag = range;
-            // score 形如 1,10
+            Comment = title;
+
             string[] scores = range.Split(',');
-            Min = int.Parse(scores[0]);
-            Max = int.Parse(scores[1]);
+            if (scores.Length == 3)
+            {
+                Min = int.Parse(scores[0]);
+                Step = int.Parse(scores[1]);
+                Max = int.Parse(scores[2]);
+            }
+            else if (scores.Length == 2)
+            {
+                Min = int.Parse(scores[0]);
+                Max = int.Parse(scores[1]);
+            }
+            else if (scores.Length == 1)
+            {
+                var temp = int.Parse(range);
+                Min = Math.Min(temp, 0);
+                Max = Math.Max(temp, 0);
+            }
+            else
+                throw new Exception("MarkBox range 参数有误。");
+            Tag = $"{Min},{Step},{Max}";
+            ToolTip = Tag;
             // 分数拖动条
             ScoreSlider.Minimum = Min;
             ScoreSlider.Maximum = Max;
             double[] sliderRange = new double[Max - Min + 1];
-            for (int i = 0; i < Max - Min + 1; i++)
+            for (int i = 0; i < Max - Min + 1; i += Step)
                 sliderRange[i] = Min + i;
             ScoreSlider.Ticks = new System.Windows.Media.DoubleCollection(sliderRange);
             // 默认最高分
@@ -40,7 +58,15 @@ namespace WpfCommentHelper
         public string Score
         {
             get => ScoreBox.Text;
-            set => ScoreBox.Text = value;
+            private set => ScoreBox.Text = value;
+        }
+        /// <summary>
+        /// 获取该打分项的批语
+        /// </summary>
+        public string Comment
+        {
+            get => TitleBox.Content.ToString();
+            private set => TitleBox.Content = value;
         }
         /// <summary>
         /// 最高分数（同时也是默认值）
@@ -50,32 +76,9 @@ namespace WpfCommentHelper
         /// 最低分数
         /// </summary>
         public int Min { get; set; }
-
         /// <summary>
-        /// 在分数栏被点选时，用方向键来调整分数
+        /// 递进步数
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ScoreBox_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (!int.TryParse(ScoreBox.Text, out int score)) return;
-            switch (e.Key)
-            {
-                case Key.Up:
-                case Key.Right:
-                    if (score < Max) score += 1;
-                    break;
-                case Key.Down:
-                case Key.Left:
-                    if (score > Min) score -= 1;
-                    break;
-                case Key.Escape:
-                case Key.Delete:
-                    string[] text = ((string)Tag).Split(',');
-                    Score = text[text.Length - 1];
-                    return;
-            }
-            ScoreBox.Text = score.ToString();
-        }
+        public int Step { get; set; } = 1;
     }
 }

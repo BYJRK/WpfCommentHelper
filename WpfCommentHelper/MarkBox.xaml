@@ -30,7 +30,6 @@
                  VerticalAlignment="Center"
                  HorizontalContentAlignment="Center"
                  HorizontalAlignment="Right" 
-                 KeyUp="ScoreBox_KeyUp"
                  Text="10"
                  Grid.Column="1"/>
     </Grid>

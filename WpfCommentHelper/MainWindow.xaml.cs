@@ -16,6 +16,8 @@ namespace WpfCommentHelper
         public MainWindow()
         {
             InitializeComponent();
+
+            ReadXml("template.xml");
         }
 
         /// <summary>
@@ -28,25 +30,29 @@ namespace WpfCommentHelper
         /// <param name="filename"></param>
         public void ReadXml(string filename)
         {
-            XDocument doc = XDocument.Load(filename);
-            // root 为一个 task，一定没有分数
-            XElement root = doc.Root;
-
-            TaskBox rootTask = new TaskBox(root.Attribute("title").Value, root.Attribute("score")?.Value);
-            rootTask.FontSize = 18;
-            AddChildrenFromXElement(rootTask, root);
-
-            CommentPanel.Children.Clear();
-            CommentPanel.Children.Add(rootTask);
             try
             {
+                XDocument doc = XDocument.Load(filename);
+                // root 为一个 task，一定没有分数
+                XElement root = doc.Root;
+
+                TaskBox rootTask = new TaskBox(root.Attribute("title").Value, 
+                    root.Attribute("score")?.Value, 
+                    root.Name.ToString(),
+                    root.Attribute("desc")?.Value);
+                rootTask.FontSize = 18;
+                AddChildrenFromXElement(rootTask, root);
+
+                CommentPanel.Children.Clear();
+                CommentPanel.Children.Add(rootTask);
+                UpdateComment(this, null);
+
+                FileName = filename;
             }
             catch (Exception e)
             {
-                MessageBox.Show("Unexpected document format.");
+                MessageBox.Show("XML 文件内容有误。\n原因：" + e.Message);
             }
-
-            UpdateComment(this, null);
         }
         /// <summary>
         /// 将现有批改界面保存为 XML 文件，包含当前的分数
@@ -91,6 +97,7 @@ namespace WpfCommentHelper
             {
                 foreach (var elem in root.Elements())
                 {
+                    string type = elem.Name.ToString();
                     string title = elem.Attribute("title")?.Value;
                     string score = elem.Attribute("score")?.Value;
                     string desc = elem.Attribute("desc")?.Value;
@@ -99,27 +106,14 @@ namespace WpfCommentHelper
                     {
                         // 一个大标题，标题前有空行
                         case "task":
-                            TaskBox t = new TaskBox(title, score, desc);
-                            t.FontSize = task.FontSize > 15 ? task.FontSize - 1 : 15;
-                            t.TitleBox.Tag = "task";
-                            AddChildrenFromXElement(t, elem);
-                            task.AddChildren(t);
-                            break;
                         // 一个小标题，标题前没有空行
                         case "subtask":
-                            TaskBox st = new TaskBox(title, score, desc, "");
-                            st.FontSize = task.FontSize > 15 ? task.FontSize - 1 : 15;
-                            st.TitleBox.Tag = "subtask";
-                            AddChildrenFromXElement(st, elem);
-                            task.AddChildren(st);
-                            break;
                         // 一个批语分组，标题前没有空行，标题后有分号
                         case "group":
-                            TaskBox g = new TaskBox(title, score, desc, "", ";");
-                            g.FontSize = task.FontSize > 15 ? task.FontSize - 1 : 15;
-                            g.TitleBox.Tag = "group";
-                            AddChildrenFromXElement(g, elem);
-                            task.AddChildren(g);
+                            TaskBox t = new TaskBox(title, score, type, desc);
+                            t.FontSize = task.FontSize > 15 ? task.FontSize - 1 : 15;
+                            AddChildrenFromXElement(t, elem);
+                            task.AddChildren(t);
                             break;
                         case "check":
                             CheckBox c = new CheckBox();
@@ -143,6 +137,7 @@ namespace WpfCommentHelper
                             MarkBox m = new MarkBox(title, elem.Attribute("range").Value, score);
                             m.TitleBox.Click += UpdateComment;
                             m.ScoreBox.TextChanged += UpdateComment;
+                            m.ScoreSlider.ValueChanged += UpdateComment;
                             if (check != null)
                                 m.TitleBox.IsChecked = bool.Parse(check);
                             task.AddChildren(m);
@@ -171,7 +166,7 @@ namespace WpfCommentHelper
                 switch (child)
                 {
                     case TaskBox t:
-                        xelem = new XElement(t.TitleBox.Tag.ToString());
+                        xelem = new XElement(t.Type);
                         AddXElementsFromTaskBox(xelem, t);
                         root.Add(xelem);
                         break;
@@ -217,8 +212,7 @@ namespace WpfCommentHelper
             open.Filter = "Comment files (*.xml)|*.xml";
             if (open.ShowDialog() == Win32.DialogResult.OK)
             {
-                FileName = open.FileName;
-                ReadXml(FileName);
+                ReadXml(open.FileName);
             }
         }
         /// <summary>
