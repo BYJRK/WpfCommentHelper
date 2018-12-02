@@ -11,7 +11,7 @@
         AllowDrop="True"
         Drop="Window_Drop"
         DragEnter="Window_DragEnter"
-        Title="作业批改助手" Height="800" Width="1200">
+        Height="800" Width="1200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

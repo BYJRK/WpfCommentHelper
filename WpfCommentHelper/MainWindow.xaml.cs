@@ -14,11 +14,15 @@ namespace WpfCommentHelper
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static readonly string ProgramTitle = "作业批改助手";
+
         public MainWindow()
         {
             InitializeComponent();
 
             ReadXml("template.xml");
+
+            Title = ProgramTitle;
         }
 
         /// <summary>
@@ -49,6 +53,8 @@ namespace WpfCommentHelper
                 UpdateComment(this, null);
 
                 FileName = filename;
+                // 修改程序的标题
+                Title = $"{ProgramTitle} - {Path.GetFileNameWithoutExtension(filename)}";
             }
             catch (Exception e)
             {
@@ -300,7 +306,11 @@ namespace WpfCommentHelper
             }
             UpdateComment(this, null);
         }
-
+        /// <summary>
+        /// 处理拖入的文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -312,7 +322,11 @@ namespace WpfCommentHelper
                 }
             }
         }
-
+        /// <summary>
+        /// 拖入事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
