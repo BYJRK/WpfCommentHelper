@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Xml.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,8 +37,8 @@ namespace WpfCommentHelper
                 // root 为一个 task，一定没有分数
                 XElement root = doc.Root;
 
-                TaskBox rootTask = new TaskBox(root.Attribute("title").Value, 
-                    root.Attribute("score")?.Value, 
+                TaskBox rootTask = new TaskBox(root.Attribute("title").Value,
+                    root.Attribute("score")?.Value,
                     root.Name.ToString(),
                     root.Attribute("desc")?.Value);
                 rootTask.FontSize = 18;
@@ -198,7 +199,7 @@ namespace WpfCommentHelper
                 }
             }
         }
-
+        
         #region 界面事件
 
         /// <summary>
@@ -225,12 +226,43 @@ namespace WpfCommentHelper
             Win32.SaveFileDialog save = new Win32.SaveFileDialog();
             //save.FileName = FileName;
             save.InitialDirectory = Path.GetDirectoryName(FileName);
+            save.FileName = Path.GetFileNameWithoutExtension(FileName);
             save.Filter = "Comment files (*.xml)|*.xml";
             if (save.ShowDialog() == Win32.DialogResult.OK)
             {
                 //FileName = save.FileName;
                 WriteXml(save.FileName);
             }
+        }
+        /// <summary>
+        /// 快速将批语导出为 Markdown 语法
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Copy_Click(object sender, RoutedEventArgs e)
+        {
+            bool originVerbose = TaskBox.Verbose;
+            TaskBox t = (TaskBox)CommentPanel.Children[0];
+
+            TaskBox.Verbose = false;
+            string simple = t.Comment.Trim();
+            if (simple.EndsWith(";")) simple = simple.TrimEnd(';') + ".";
+            string nl = Environment.NewLine;
+            simple = string.Join(nl,
+                from line in simple.Split(new string[] { nl }, StringSplitOptions.None)
+                select $"> {line}"
+                );
+
+            TaskBox.Verbose = true;
+            string detail = t.Comment.Trim();
+            if (detail.EndsWith(";")) detail = detail.TrimEnd(';') + ".";
+            detail = $"Overall Score [{t.Score}]{Environment.NewLine}{detail}";
+            detail = $"```{nl}{detail}{nl}```";
+
+            string result = simple + nl + nl + detail;
+            Clipboard.SetText(result);
+
+            TaskBox.Verbose = originVerbose;            
         }
         /// <summary>
         /// 重置左侧所有选项（其实是重新读取对应 XML 文档）
@@ -254,9 +286,39 @@ namespace WpfCommentHelper
         /// <param name="e"></param>
         private void Verbose_Click(object sender, RoutedEventArgs e)
         {
-            ToggleButton b = sender as ToggleButton;
-            TaskBox.Verbose = b.IsChecked.Value;
+            Button b = sender as Button;
+            string content = b.Content as string;
+            if(content=="详细")
+            {
+                TaskBox.Verbose = false;
+                b.Content = "简略";
+            }
+            else if(content=="简略")
+            {
+                TaskBox.Verbose = true;
+                b.Content = "详细";
+            }
             UpdateComment(this, null);
+        }
+
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var filePaths = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (Path.GetExtension(filePaths[0]) == ".xml")
+                {
+                    ReadXml(filePaths[0]);
+                }
+            }
+        }
+
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effects = DragDropEffects.Link;
+            else
+                e.Effects = DragDropEffects.None;
         }
 
         #endregion

@@ -8,6 +8,9 @@
         FontSize="16"
         FontFamily="Microsoft Yahei"
         WindowStartupLocation="CenterScreen"
+        AllowDrop="True"
+        Drop="Window_Drop"
+        DragEnter="Window_DragEnter"
         Title="作业批改助手" Height="800" Width="1200">
     <Grid>
         <Grid.RowDefinitions>
@@ -16,7 +19,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="355"/>
+            <ColumnDefinition Width="350"/>
         </Grid.ColumnDefinitions>
         <Border Margin="5,5,5,4.5" BorderThickness="1" BorderBrush="Gray" Grid.RowSpan="2">
             <ScrollViewer Name="CommentScroll" VerticalScrollBarVisibility="Auto"
@@ -54,13 +57,14 @@
                 <Style TargetType="Button">
                     <Setter Property="Margin" Value="5,0,0,0"/>
                     <Setter Property="Background" Value="White"/>
-                    <Setter Property="Width" Value="85"/>
+                    <Setter Property="Width" Value="65"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                 </Style>
             </StackPanel.Resources>
-            <ToggleButton Content="详细" Width="80" Background="White" Click="Verbose_Click"/>
+            <Button Content="简略" Click="Verbose_Click"/>
             <Button Content="打开" Click="Open_Click"/>
             <Button Content="保存" Click="Save_Click"/>
+            <Button Content="复制" Click="Copy_Click"/>
             <Button Content="重置" Click="Cut_Click"/>
         </StackPanel>
     </Grid>
