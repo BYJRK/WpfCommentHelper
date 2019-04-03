@@ -139,6 +139,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Font\PingFang SC Regular.ttf" />
+    <Resource Include="Font\PingFang SC Light.ttf" />
+    <Resource Include="Font\PingFang SC Semibold.ttf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

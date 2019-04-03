@@ -6,12 +6,16 @@
         xmlns:local="clr-namespace:WpfCommentHelper"
         mc:Ignorable="d"
         FontSize="16"
-        FontFamily="Microsoft Yahei"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True"
         Drop="Window_Drop"
         DragEnter="Window_DragEnter"
         Height="800" Width="1200">
+    <Window.Resources>
+        <FontFamily x:Key="PingFang Regular">/Font/#.PingFang SC Regular</FontFamily>
+        <FontFamily x:Key="PingFang Light">/Font/#.PingFang SC Light</FontFamily>
+        <FontFamily x:Key="PingFang Semibold">/Font/#.PingFang SC Semibold</FontFamily>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -23,12 +27,14 @@
         </Grid.ColumnDefinitions>
         <Border Margin="5,5,5,4.5" BorderThickness="1" BorderBrush="Gray" Grid.RowSpan="2">
             <ScrollViewer Name="CommentScroll" VerticalScrollBarVisibility="Auto"
+                          FontFamily="{StaticResource PingFang Regular}"
                           HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Name="CommentPanel">
+                <StackPanel Name="CommentPanel" Margin="0,5">
                     <StackPanel.Resources>
                         <Style TargetType="Label">
                             <Setter Property="Margin" Value="0,3"/>
                             <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="FontFamily" Value="{StaticResource PingFang Semibold}"/>
                         </Style>
                         <Style TargetType="RadioButton">
                             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -37,6 +43,9 @@
                         <Style TargetType="CheckBox">
                             <Setter Property="VerticalContentAlignment" Value="Center"/>
                             <Setter Property="Margin" Value="0,2"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontFamily" Value="{StaticResource PingFang Light}"/>
                         </Style>
                     </StackPanel.Resources>
                 </StackPanel>
@@ -47,6 +56,7 @@
                  Margin="0,5,5,4.5"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
+                 FontFamily="{StaticResource PingFang Regular}"
                  VerticalScrollBarVisibility="Auto"
                  Grid.Column="1"/>
         <StackPanel Grid.Row="1" Grid.Column="1"
@@ -59,6 +69,7 @@
                     <Setter Property="Background" Value="White"/>
                     <Setter Property="Width" Value="65"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="FontFamily" Value="{StaticResource PingFang Regular}"/>
                 </Style>
             </StackPanel.Resources>
             <Button Content="简略" Click="Verbose_Click"/>
