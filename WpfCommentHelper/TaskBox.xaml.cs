@@ -178,6 +178,7 @@ namespace WpfCommentHelper
             }
             ScoreBox.Text = score.ToString();
         }
+
         /// <summary>
         /// 为当前题目添加新的子项目
         /// </summary>

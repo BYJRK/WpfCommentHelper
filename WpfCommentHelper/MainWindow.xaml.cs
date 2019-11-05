@@ -3,9 +3,11 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using Win32 = System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace WpfCommentHelper
 {
@@ -282,8 +284,6 @@ namespace WpfCommentHelper
         private void Cut_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(FileName)) return;
-            // 复制内容到剪贴板
-            Clipboard.SetText(CommentBox.Text);
             // 清空并重置
             ReadXml(FileName);
             // 回到顶部
