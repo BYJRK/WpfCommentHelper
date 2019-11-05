@@ -24,6 +24,7 @@
                 Value="{Binding ElementName=ScoreBox,Path=Text,Mode=TwoWay,FallbackValue=0}" SmallChange="1"/>
         <TextBox Name="ScoreBox"
                  Width="40"
+                 FontWeight="Normal"
                  IsReadOnly="True"
                  Background="Transparent"
                  BorderThickness="0,0,0,1"

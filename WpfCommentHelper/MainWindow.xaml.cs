@@ -109,6 +109,7 @@ namespace WpfCommentHelper
                     string score = elem.Attribute("score")?.Value;
                     string desc = elem.Attribute("desc")?.Value;
                     string check = elem.Attribute("ischecked")?.Value;
+                    bool emphasis = elem.Attribute("emphasis")?.Value == "True";
                     switch (elem.Name.ToString())
                     {
                         // 一个大标题，标题前有空行
@@ -127,6 +128,7 @@ namespace WpfCommentHelper
                             c.Content = title;
                             c.Tag = score;
                             c.Click += UpdateComment;
+                            c.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 c.IsChecked = bool.Parse(check);
                             task.AddChildren(c);
@@ -136,6 +138,7 @@ namespace WpfCommentHelper
                             r.Content = title;
                             r.Tag = score;
                             r.Click += UpdateComment;
+                            r.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 r.IsChecked = bool.Parse(check);
                             task.AddChildren(r);
@@ -145,6 +148,7 @@ namespace WpfCommentHelper
                             m.TitleBox.Click += UpdateComment;
                             m.ScoreBox.TextChanged += UpdateComment;
                             m.ScoreSlider.ValueChanged += UpdateComment;
+                            m.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 m.TitleBox.IsChecked = bool.Parse(check);
                             task.AddChildren(m);
