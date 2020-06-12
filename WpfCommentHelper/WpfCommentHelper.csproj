@@ -73,6 +73,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -94,10 +95,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="MarkBox.xaml.cs">
+    <Compile Include="UserControls\MarkBox.xaml.cs">
       <DependentUpon>MarkBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TaskBox.xaml.cs">
+    <Compile Include="UserControls\TaskBox.xaml.cs">
       <DependentUpon>TaskBox.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
@@ -112,11 +113,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MarkBox.xaml">
+    <Page Include="UserControls\MarkBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TaskBox.xaml">
+    <Page Include="UserControls\TaskBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -139,9 +140,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Font\PingFang SC Regular.ttf" />
-    <Resource Include="Font\PingFang SC Light.ttf" />
-    <Resource Include="Font\PingFang SC Semibold.ttf" />
+    <Resource Include="Font\SOURCEHANSANSSC-REGULAR.OTF" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -168,5 +167,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

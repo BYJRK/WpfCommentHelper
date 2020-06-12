@@ -5,9 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Win32 = System.Windows.Forms;
 using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Windows.Threading;
+using System.Text.RegularExpressions;
 
 namespace WpfCommentHelper
 {
@@ -94,6 +92,12 @@ namespace WpfCommentHelper
             if (TaskBox.Verbose)
                 str = $"Overall Score [{t.Score}]{Environment.NewLine}{str}";
             CommentBox.Text = str;
+
+            // 在标题栏也添加一个分数信息
+            if (!Regex.IsMatch(Title, @"\[\d+\]$"))
+                Title += $" [{t.Score}]";
+            else
+                Title = Regex.Replace(Title, @"\[\d+\]$", $"[{t.Score}]");
         }
         /// <summary>
         /// 将界面中的 XElement 转为对应 TaskBox
@@ -126,9 +130,11 @@ namespace WpfCommentHelper
                             task.AddChildren(t);
                             break;
                         case "check":
-                            CheckBox c = new CheckBox();
-                            c.Content = title;
-                            c.Tag = score;
+                            CheckBox c = new CheckBox
+                            {
+                                Content = title,
+                                Tag = score
+                            };
                             c.Click += UpdateComment;
                             c.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
@@ -136,9 +142,11 @@ namespace WpfCommentHelper
                             task.AddChildren(c);
                             break;
                         case "radio":
-                            RadioButton r = new RadioButton();
-                            r.Content = title;
-                            r.Tag = score;
+                            RadioButton r = new RadioButton
+                            {
+                                Content = title,
+                                Tag = score
+                            };
                             r.Click += UpdateComment;
                             r.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
@@ -211,7 +219,7 @@ namespace WpfCommentHelper
                 }
             }
         }
-        
+
         #region 界面事件
 
         /// <summary>
@@ -274,7 +282,7 @@ namespace WpfCommentHelper
             string result = simple + nl + nl + detail;
             Clipboard.SetText(result);
 
-            TaskBox.Verbose = originVerbose;            
+            TaskBox.Verbose = originVerbose;
         }
         /// <summary>
         /// 重置左侧所有选项（其实是重新读取对应 XML 文档）
@@ -298,12 +306,12 @@ namespace WpfCommentHelper
         {
             Button b = sender as Button;
             string content = b.Content as string;
-            if(content=="详细")
+            if (content == "详细")
             {
                 TaskBox.Verbose = false;
                 b.Content = "简略";
             }
-            else if(content=="简略")
+            else if (content == "简略")
             {
                 TaskBox.Verbose = true;
                 b.Content = "详细";
