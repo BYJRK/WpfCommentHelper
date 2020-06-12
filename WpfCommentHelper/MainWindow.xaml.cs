@@ -3,9 +3,10 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Win32 = System.Windows.Forms;
+using Forms = System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace WpfCommentHelper
 {
@@ -14,7 +15,13 @@ namespace WpfCommentHelper
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// 默认的程序标题
+        /// </summary>
         public static readonly string ProgramTitle = "作业批改助手";
+        public static readonly string LineBreak = Environment.NewLine;
+
+        private string OutputMarkdownFileName = "";
 
         public MainWindow()
         {
@@ -90,7 +97,7 @@ namespace WpfCommentHelper
                 str = str.TrimEnd(';') + ".";
             // 如果显示详细信息，则在评语开头添加分数
             if (TaskBox.Verbose)
-                str = $"Overall Score [{t.Score}]{Environment.NewLine}{str}";
+                str = $"Overall Score [{t.Score}]{LineBreak}{str}";
             CommentBox.Text = str;
 
             // 在标题栏也添加一个分数信息
@@ -219,6 +226,33 @@ namespace WpfCommentHelper
                 }
             }
         }
+        /// <summary>
+        /// 获取完整的 Markdown 格式的批语信息
+        /// </summary>
+        /// <returns></returns>
+        private (string comment, string score) GetFullComments()
+        {
+            bool originVerbose = TaskBox.Verbose;
+            TaskBox t = (TaskBox)CommentPanel.Children[0];
+
+            TaskBox.Verbose = false;
+            string simple = t.Comment.Trim();
+            if (simple.EndsWith(";")) simple = simple.TrimEnd(';') + ".";
+            simple = string.Join(LineBreak,
+                from line in simple.Split(new string[] { LineBreak }, StringSplitOptions.None)
+                select $"> {line}"
+                );
+
+            TaskBox.Verbose = true;
+            string detail = t.Comment.Trim();
+            if (detail.EndsWith(";")) detail = detail.TrimEnd(';') + ".";
+            detail = $"Overall Score [{t.Score}]{LineBreak}{detail}";
+            detail = $"```{LineBreak}{detail}{LineBreak}```";
+
+            TaskBox.Verbose = originVerbose;
+
+            return (simple + LineBreak + LineBreak + detail, t.Score);
+        }
 
         #region 界面事件
 
@@ -229,11 +263,13 @@ namespace WpfCommentHelper
         /// <param name="e"></param>
         private void Open_Click(object sender, RoutedEventArgs e)
         {
-            Win32.OpenFileDialog open = new Win32.OpenFileDialog();
+            Forms.OpenFileDialog open = new Forms.OpenFileDialog();
             open.Filter = "Comment files (*.xml)|*.xml";
-            if (open.ShowDialog() == Win32.DialogResult.OK)
+            if (open.ShowDialog() == Forms.DialogResult.OK)
             {
                 ReadXml(open.FileName);
+                // 打开了新的 XML 文件，认为需要重新设定 Markdown 文件的路径
+                OutputMarkdownFileName = "";
             }
         }
         /// <summary>
@@ -243,12 +279,12 @@ namespace WpfCommentHelper
         /// <param name="e"></param>
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            Win32.SaveFileDialog save = new Win32.SaveFileDialog();
+            Forms.SaveFileDialog save = new Forms.SaveFileDialog();
             //save.FileName = FileName;
             save.InitialDirectory = Path.GetDirectoryName(FileName);
             save.FileName = Path.GetFileNameWithoutExtension(FileName);
             save.Filter = "Comment files (*.xml)|*.xml";
-            if (save.ShowDialog() == Win32.DialogResult.OK)
+            if (save.ShowDialog() == Forms.DialogResult.OK)
             {
                 //FileName = save.FileName;
                 WriteXml(save.FileName);
@@ -261,28 +297,9 @@ namespace WpfCommentHelper
         /// <param name="e"></param>
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
-            bool originVerbose = TaskBox.Verbose;
-            TaskBox t = (TaskBox)CommentPanel.Children[0];
+            var result = GetFullComments();
 
-            TaskBox.Verbose = false;
-            string simple = t.Comment.Trim();
-            if (simple.EndsWith(";")) simple = simple.TrimEnd(';') + ".";
-            string nl = Environment.NewLine;
-            simple = string.Join(nl,
-                from line in simple.Split(new string[] { nl }, StringSplitOptions.None)
-                select $"> {line}"
-                );
-
-            TaskBox.Verbose = true;
-            string detail = t.Comment.Trim();
-            if (detail.EndsWith(";")) detail = detail.TrimEnd(';') + ".";
-            detail = $"Overall Score [{t.Score}]{Environment.NewLine}{detail}";
-            detail = $"```{nl}{detail}{nl}```";
-
-            string result = simple + nl + nl + detail;
-            Clipboard.SetText(result);
-
-            TaskBox.Verbose = originVerbose;
+            Clipboard.SetText(result.comment);
         }
         /// <summary>
         /// 重置左侧所有选项（其实是重新读取对应 XML 文档）
@@ -345,6 +362,39 @@ namespace WpfCommentHelper
                 e.Effects = DragDropEffects.Link;
             else
                 e.Effects = DragDropEffects.None;
+        }
+        /// <summary>
+        /// 导出批语到 Markdown 文件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Output_Click(object sender, RoutedEventArgs e)
+        {
+            // 如果没有 Markdown 文件的路径
+            if (string.IsNullOrEmpty(OutputMarkdownFileName))
+            {
+                var save = new Forms.SaveFileDialog
+                {
+                    FileName = "score.md",
+                    Filter = "文本文件|*.md"
+                };
+                if (save.ShowDialog() != Forms.DialogResult.OK)
+                {
+                    return;
+                }
+                OutputMarkdownFileName = save.FileName;
+            }
+            // 到此，应该是有 Markdown 文件路径的
+            string studentName = InputBox.Input("请输入学生姓名：", "提示");
+            if (string.IsNullOrWhiteSpace(studentName))
+                return;
+            (string comment, string score) = GetFullComments();
+            string result = $"## {studentName} {score}" + LineBreak + LineBreak + comment;
+
+            using (var writer = new StreamWriter(OutputMarkdownFileName, true, Encoding.UTF8))
+            {
+                writer.WriteLine(result);
+            }
         }
 
         #endregion

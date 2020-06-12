@@ -35,6 +35,7 @@
         <Border Margin="5,5,5,4.5" BorderThickness="1" BorderBrush="Gray" Grid.RowSpan="2">
             <ScrollViewer Name="CommentScroll" VerticalScrollBarVisibility="Auto"
                           FontFamily="{StaticResource MainFont}"
+                          MouseDoubleClick="Open_Click"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Name="CommentPanel" Margin="0,5">
                     <!--作业批改区域的样式-->
@@ -72,8 +73,8 @@
                     Margin="0,0,5,5"
                     Orientation="Horizontal">
             <Button Content="简略" Click="Verbose_Click"/>
-            <Button Content="打开" Click="Open_Click"/>
-            <Button Content="保存" Click="Save_Click"/>
+            <!--<Button Content="打开" Click="Open_Click"/>-->
+            <Button Content="导出" Click="Output_Click"/>
             <Button Content="复制" Click="Copy_Click"/>
             <Button Content="重置" Click="Cut_Click"/>
         </StackPanel>
