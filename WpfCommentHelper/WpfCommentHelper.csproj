@@ -98,7 +98,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="InputBox.xaml.cs">
+    <Compile Include="CustomForms\InputBox.xaml.cs">
       <DependentUpon>InputBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\MarkBox.xaml.cs">
@@ -107,7 +107,7 @@
     <Compile Include="UserControls\TaskBox.xaml.cs">
       <DependentUpon>TaskBox.xaml</DependentUpon>
     </Compile>
-    <Page Include="InputBox.xaml">
+    <Page Include="CustomForms\InputBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

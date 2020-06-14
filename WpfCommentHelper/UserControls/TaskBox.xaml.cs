@@ -146,8 +146,6 @@ namespace WpfCommentHelper
         /// <summary>
         /// 计算当前题目的分数（会在任意子项目的分数发生变化时被调用）
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void CalculateScore(object sender, RoutedEventArgs e)
         {
             int score = 0;
@@ -182,7 +180,6 @@ namespace WpfCommentHelper
         /// <summary>
         /// 为当前题目添加新的子项目
         /// </summary>
-        /// <param name="children"></param>
         public void AddChildren(params Control[] children)
         {
             foreach (var elem in children)
@@ -285,8 +282,6 @@ namespace WpfCommentHelper
         /// <summary>
         /// 判断某个选项栏是否被忽略（即没有被选中，或内容以“*”结束）
         /// </summary>
-        /// <param name="button"></param>
-        /// <returns></returns>
         private bool CanIgnore(Control element)
         {
             switch (element)

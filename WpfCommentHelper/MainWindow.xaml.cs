@@ -7,6 +7,7 @@ using Forms = System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Text;
+using WpfCommentHelper.CustomForms;
 
 namespace WpfCommentHelper
 {
@@ -389,12 +390,15 @@ namespace WpfCommentHelper
             if (string.IsNullOrWhiteSpace(studentName))
                 return;
             (string comment, string score) = GetFullComments();
-            string result = $"## {studentName} {score}" + LineBreak + LineBreak + comment;
+            string result = $"## {studentName} {score}" + LineBreak + LineBreak + comment + LineBreak;
 
             using (var writer = new StreamWriter(OutputMarkdownFileName, true, Encoding.UTF8))
             {
                 writer.WriteLine(result);
             }
+
+            // 导出之后顺便清空评分
+            Cut_Click(this, null);
         }
 
         #endregion

@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Forms = System.Windows.Forms;
 
-namespace WpfCommentHelper
+namespace WpfCommentHelper.CustomForms
 {
     /// <summary>
     /// InputBox.xaml 的交互逻辑
