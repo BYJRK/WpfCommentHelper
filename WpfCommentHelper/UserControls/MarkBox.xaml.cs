@@ -15,7 +15,16 @@ namespace WpfCommentHelper
         public MarkBox(string title, string range, string score) : this()
         {
             Comment = title;
+            ParseRange(range);
+            // 默认最高分
+            if (string.IsNullOrEmpty(score))
+                Score = Max.ToString();
+            else
+                Score = score;
+        }
 
+        public void ParseRange(string range)
+        {
             string[] scores = range.Split(',');
             if (scores.Length == 3)
             {
@@ -45,11 +54,6 @@ namespace WpfCommentHelper
             for (int i = 0; i < Max - Min + 1; i += Step)
                 sliderRange[i] = Min + i;
             ScoreSlider.Ticks = new System.Windows.Media.DoubleCollection(sliderRange);
-            // 默认最高分
-            if (string.IsNullOrEmpty(score))
-                Score = Max.ToString();
-            else
-                Score = score;
         }
 
         /// <summary>

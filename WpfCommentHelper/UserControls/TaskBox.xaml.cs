@@ -3,7 +3,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using WpfCommentHelper.CustomForms;
 
 namespace WpfCommentHelper
 {
@@ -146,7 +147,7 @@ namespace WpfCommentHelper
         /// <summary>
         /// 计算当前题目的分数（会在任意子项目的分数发生变化时被调用）
         /// </summary>
-        private void CalculateScore(object sender, RoutedEventArgs e)
+        public void CalculateScore(object sender, RoutedEventArgs e)
         {
             int score = 0;
             if (int.TryParse((string)Tag, out int tagValue))
@@ -182,26 +183,87 @@ namespace WpfCommentHelper
         /// </summary>
         public void AddChildren(params Control[] children)
         {
+
             foreach (var elem in children)
             {
                 switch (elem)
                 {
-                    case CheckBox c:
-                        c.Checked += CalculateScore;
-                        c.Unchecked += CalculateScore;
-                        c.ToolTip = c.Tag;
+                    case CheckBox check:
+                        check.Checked += CalculateScore;
+                        check.Unchecked += CalculateScore;
+                        check.ToolTip = check.Tag;
+                        {
+                            var menu = new ContextMenu();
+                            var edit = new MenuItem { Header = "编辑" };
+                            edit.Click += (sender2, e2) =>
+                            {
+                                if (EditForm.Edit(check))
+                                {
+                                    CalculateScore(check, null);
+                                    ((MainWindow)Application.Current.MainWindow).UpdateComment(check, null);
+                                }
+                            };
+                            menu.Items.Add(edit);
+                            var delete = new MenuItem { Header = "删除" };
+                            delete.Click += (sender3, e3) =>
+                              {
+                                  (VisualTreeHelper.GetParent(check) as StackPanel).Children.Remove(check);
+                              };
+                            menu.Items.Add(delete);
+                            check.ContextMenu = menu;
+                        }
                         break;
-                    case RadioButton r:
-                        r.Checked += CalculateScore;
-                        r.Unchecked += CalculateScore;
-                        r.ToolTip = r.Tag;
+                    case RadioButton radio:
+                        radio.Checked += CalculateScore;
+                        radio.Unchecked += CalculateScore;
+                        radio.ToolTip = radio.Tag;
+                        {
+                            var menu = new ContextMenu();
+                            var edit = new MenuItem { Header = "编辑" };
+                            edit.Click += (sender2, e2) =>
+                            {
+                                if (EditForm.Edit(radio))
+                                {
+                                    CalculateScore(radio, null);
+                                    ((MainWindow)Application.Current.MainWindow).UpdateComment(radio, null);
+                                }
+                            };
+                            menu.Items.Add(edit);
+                            var delete = new MenuItem { Header = "删除" };
+                            delete.Click += (sender3, e3) =>
+                            {
+                                (VisualTreeHelper.GetParent(radio) as StackPanel).Children.Remove(radio);
+                            };
+                            menu.Items.Add(delete);
+                            radio.ContextMenu = menu;
+                        }
                         break;
-                    case TaskBox b:
-                        b.ScoreBox.TextChanged += CalculateScore;
+                    case TaskBox box:
+                        box.ScoreBox.TextChanged += CalculateScore;
                         break;
-                    case MarkBox m:
-                        m.ScoreBox.TextChanged += CalculateScore;
-                        m.ScoreSlider.ValueChanged += CalculateScore;
+                    case MarkBox mark:
+                        mark.ScoreBox.TextChanged += CalculateScore;
+                        mark.ScoreSlider.ValueChanged += CalculateScore;
+                        {
+                            var menu = new ContextMenu();
+                            var edit = new MenuItem { Header = "编辑" };
+                            edit.Click += (sender2, e2) =>
+                            {
+                                if (EditForm.Edit(mark))
+                                {
+                                    CalculateScore(mark, null);
+                                    ((MainWindow)Application.Current.MainWindow).UpdateComment(mark, null);
+                                }
+                            };
+                            menu.Items.Add(edit);
+                            var delete = new MenuItem { Header = "删除" };
+                            delete.Click += (sender3, e3) =>
+                            {
+                                (VisualTreeHelper.GetParent(mark) as StackPanel).Children.Remove(mark);
+                            };
+                            menu.Items.Add(delete);
+                            mark.ContextMenu = menu;
+                        }
                         break;
                 }
                 Container.Children.Add(elem);
@@ -280,7 +342,7 @@ namespace WpfCommentHelper
             return 0;
         }
         /// <summary>
-        /// 判断某个选项栏是否被忽略（即没有被选中，或内容以“*”结束）
+        /// 判断某个选项栏是否被忽略（即没有被选中，或内容以“*”结尾）
         /// </summary>
         private bool CanIgnore(Control element)
         {
@@ -300,10 +362,36 @@ namespace WpfCommentHelper
                     // 如果被选中，则不能忽略
                     if (m.TitleBox.IsChecked.Value) return false;
                     // 如果没有被选中，但要求详细，则不能忽略
-                    else if (m.Score!=m.Max.ToString() && Verbose) return false;
+                    else if (m.Score != m.Max.ToString() && Verbose) return false;
                     else return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 编辑
+        /// </summary>
+        private void Edit_Click(object sender, RoutedEventArgs e)
+        {
+            EditForm.Edit(this);
+
+            e.Handled = true;
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            var parent = VisualTreeHelper.GetParent(this);
+            // 这里用一个很笨拙的方法来实现删除功能
+            // 如果父元素是一个 StackPanel，说明上级是一个 TaskBox
+            // 否则如果是个 Grid，则认为当前的 Task 是根节点，不可删除
+            if (parent is StackPanel p)
+            {
+                p.Children.Remove(this);
+            }
+            else
+            {
+                MessageBox.Show("当前为根节点，无法删除。");
+            }
         }
     }
 }

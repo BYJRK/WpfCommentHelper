@@ -25,7 +25,8 @@
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource MainFont}"/>
-            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Margin" Value="3,3,3,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="FontFamily" Value="{StaticResource MainFont}"/>
@@ -44,7 +45,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Name="Message" Text="请输入内容：" TextWrapping="Wrap"/>
+        <TextBlock Name="Message" Text="请输入内容："/>
         <StackPanel Grid.Column="1">
             <Button Content="确定" Click="Button_Click"/>
             <Button Content="取消" Click="Button_Click"/>

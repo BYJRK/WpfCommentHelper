@@ -40,9 +40,9 @@
             <ScrollViewer Name="CommentScroll" VerticalScrollBarVisibility="Auto"
                           FontFamily="{StaticResource MainFont}"
                           HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Name="CommentPanel" Margin="0,5">
+                <Grid Name="CommentPanel" Margin="0,5">
                     <!--作业批改区域的样式-->
-                    <StackPanel.Resources>
+                    <Grid.Resources>
                         <Style TargetType="Label">
                             <Setter Property="Margin" Value="0,3"/>
                             <Setter Property="FontWeight" Value="Bold"/>
@@ -59,8 +59,8 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="FontFamily" Value="{StaticResource MainFont}"/>
                         </Style>
-                    </StackPanel.Resources>
-                </StackPanel>
+                    </Grid.Resources>
+                </Grid>
             </ScrollViewer>
         </Border>
         <TextBox Name="CommentBox"
@@ -78,7 +78,8 @@
             <Button Content="简略" Click="Verbose_Click"/>
             <Button Content="打开" Click="Open_Click"/>
             <Button Content="导出" Click="Output_Click"/>
-            <Button Content="复制" Click="Copy_Click"/>
+            <!--<Button Content="复制" Click="Copy_Click"/>-->
+            <Button Content="保存" Click="Save_Click"/>
             <Button Content="重置" Click="Cut_Click"/>
         </StackPanel>
     </Grid>

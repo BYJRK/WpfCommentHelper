@@ -6,6 +6,12 @@
              xmlns:local="clr-namespace:WpfCommentHelper"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
+    <UserControl.ContextMenu>
+        <ContextMenu Name="MyContextMenu" Placement="MousePoint">
+            <MenuItem Header="编辑" Click="Edit_Click"/>
+            <MenuItem Header="删除" Click="Delete_Click"/>
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <StackPanel>
         <Grid>
             <Label x:Name="TitleBox" Content="Task 1"/>

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Forms = System.Windows.Forms;
 
 namespace WpfCommentHelper.CustomForms
 {
-    /// <summary>
-    /// InputBox.xaml 的交互逻辑
-    /// </summary>
     public partial class InputBox : Window
     {
         public InputBox()

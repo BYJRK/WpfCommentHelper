@@ -87,7 +87,7 @@ namespace WpfCommentHelper
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateComment(object sender, RoutedEventArgs e)
+        public void UpdateComment(object sender, RoutedEventArgs e)
         {
             if (CommentPanel.Children.Count == 0) return;
             TaskBox t = (TaskBox)CommentPanel.Children[0];
