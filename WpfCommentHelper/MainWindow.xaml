@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfCommentHelper"
         mc:Ignorable="d"
-        FontSize="16"
         WindowStartupLocation="CenterScreen"
         AllowDrop="True"
         Drop="Window_Drop"
@@ -20,6 +19,7 @@
             <Setter Property="Width" Value="65"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="FontFamily" Value="{StaticResource MainFont}"/>
+            <Setter Property="FontSize" Value="16"/>
         </Style>
 
         <Style TargetType="Border">
@@ -76,11 +76,19 @@
                     Margin="0,0,5,5"
                     Orientation="Horizontal">
             <Button Content="简略" Click="Verbose_Click"/>
-            <Button Content="打开" Click="Open_Click"/>
             <Button Content="导出" Click="Output_Click"/>
-            <!--<Button Content="复制" Click="Copy_Click"/>-->
-            <Button Content="保存" Click="Save_Click"/>
+            <Button Content="复制" Click="Copy_Click"/>
             <Button Content="重置" Click="Cut_Click"/>
+            <Button Content="文件" Click="File_Click">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="新建" Click="New_Click"/>
+                        <MenuItem Header="打开" Click="Open_Click"/>
+                        <MenuItem Header="保存" Click="Save_Click"/>
+                        <MenuItem Header="另存为" Click="SaveAs_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

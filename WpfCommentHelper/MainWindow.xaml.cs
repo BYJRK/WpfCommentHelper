@@ -37,10 +37,12 @@ namespace WpfCommentHelper
         /// 如果已经打开了 XML 文档，则保存文件路径，用于重新读取（重置）
         /// </summary>
         string FileName { get; set; }
+
         /// <summary>
         /// 读取 XML 文件，生成对应的批改界面
         /// </summary>
         /// <param name="filename"></param>
+        ///
         public void ReadXml(string filename)
         {
             XDocument doc = XDocument.Load(filename);
@@ -69,10 +71,12 @@ namespace WpfCommentHelper
             Title = $"{ProgramTitle} - {Path.GetFileNameWithoutExtension(filename)}";
 
         }
+
         /// <summary>
         /// 将现有批改界面保存为 XML 文件，包含当前的分数
         /// </summary>
         /// <param name="filename"></param>
+        /// 
         public void WriteXml(string filename)
         {
             XDocument doc = new XDocument();
@@ -82,6 +86,7 @@ namespace WpfCommentHelper
             doc.Add(root);
             doc.Save(filename);
         }
+
         /// <summary>
         /// 更新评语内容
         /// </summary>
@@ -107,6 +112,7 @@ namespace WpfCommentHelper
             else
                 Title = Regex.Replace(Title, @"\[\d+\]$", $"[{t.Score}]");
         }
+
         /// <summary>
         /// 将界面中的 XElement 转为对应 TaskBox
         /// </summary>
@@ -170,6 +176,7 @@ namespace WpfCommentHelper
                 }
             }
         }
+
         /// <summary>
         /// 将界面中的 TaskBox 转为对应 XElement
         /// </summary>
@@ -222,6 +229,7 @@ namespace WpfCommentHelper
                 }
             }
         }
+
         /// <summary>
         /// 获取完整的 Markdown 格式的批语信息
         /// </summary>
@@ -268,6 +276,7 @@ namespace WpfCommentHelper
                 OutputMarkdownFileName = "";
             }
         }
+
         /// <summary>
         /// 保存当前的批改为 XML 文件
         /// </summary>
@@ -286,6 +295,46 @@ namespace WpfCommentHelper
                 WriteXml(save.FileName);
             }
         }
+
+        /// <summary>
+        /// 将当前的作业另存为 XML 文件
+        /// </summary>
+        private void SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            Forms.SaveFileDialog save = new Forms.SaveFileDialog();
+            //save.FileName = FileName;
+            save.InitialDirectory = Path.GetDirectoryName(FileName);
+            save.FileName = Path.GetFileNameWithoutExtension(FileName);
+            save.Filter = "Comment files (*.xml)|*.xml";
+            if (save.ShowDialog() == Forms.DialogResult.OK)
+            {
+                //FileName = save.FileName;
+                WriteXml(save.FileName);
+            }
+        }
+
+        /// <summary>
+        /// 新建一个作业
+        /// </summary>
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            var rootTask = new TaskBox("Assignment", "", "task", "this is a new assignment");
+            rootTask.FontSize = 18;
+            // 根节点不能并列添加，不能删除
+            for (int i = 2; i < rootTask.ContextMenu.Items.Count; i++)
+            {
+                ((MenuItem)rootTask.ContextMenu.Items[i]).IsEnabled = false;
+            }
+
+            CommentPanel.Children.Clear();
+            CommentPanel.Children.Add(rootTask);
+            UpdateComment(this, null);
+
+            FileName = "";
+            // 修改程序的标题
+            Title = ProgramTitle;
+        }
+
         /// <summary>
         /// 快速将批语导出为 Markdown 语法
         /// </summary>
@@ -297,6 +346,7 @@ namespace WpfCommentHelper
 
             Clipboard.SetText(result.comment);
         }
+
         /// <summary>
         /// 重置左侧所有选项（其实是重新读取对应 XML 文档）
         /// </summary>
@@ -310,6 +360,7 @@ namespace WpfCommentHelper
             // 回到顶部
             CommentScroll.ScrollToHome();
         }
+
         /// <summary>
         /// 是否显示详尽版批语
         /// </summary>
@@ -331,6 +382,7 @@ namespace WpfCommentHelper
             }
             UpdateComment(this, null);
         }
+
         /// <summary>
         /// 处理拖入的文件
         /// </summary>
@@ -347,6 +399,7 @@ namespace WpfCommentHelper
                 }
             }
         }
+
         /// <summary>
         /// 拖入事件
         /// </summary>
@@ -359,6 +412,7 @@ namespace WpfCommentHelper
             else
                 e.Effects = DragDropEffects.None;
         }
+
         /// <summary>
         /// 导出批语到 Markdown 文件
         /// </summary>
@@ -396,6 +450,15 @@ namespace WpfCommentHelper
             Cut_Click(this, null);
         }
 
+        /// <summary>
+        /// 点击文件按钮，展开菜单
+        /// </summary>
+        private void File_Click(object sender, RoutedEventArgs e)
+        {
+            ((Button)sender).ContextMenu.IsOpen = true;
+        }
+
         #endregion
+
     }
 }
