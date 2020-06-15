@@ -191,51 +191,15 @@ namespace WpfCommentHelper
                     check.Checked += CalculateScore;
                     check.Unchecked += CalculateScore;
                     check.ToolTip = check.Tag;
-                    {
-                        var menu = new ContextMenu();
-                        var edit = new MenuItem { Header = "编辑" };
-                        edit.Click += (sender2, e2) =>
-                        {
-                            if (EditForm.Edit(check))
-                            {
-                                CalculateScore(check, null);
-                                ((MainWindow)Application.Current.MainWindow).UpdateComment(check, null);
-                            }
-                        };
-                        menu.Items.Add(edit);
-                        var delete = new MenuItem { Header = "删除" };
-                        delete.Click += (sender3, e3) =>
-                          {
-                              this.Container.Children.Remove(check);
-                          };
-                        menu.Items.Add(delete);
-                        check.ContextMenu = menu;
-                    }
+                    check.Click += ((MainWindow)Application.Current.MainWindow).UpdateComment;
+                    AddContextMenu(check);
                     break;
                 case RadioButton radio:
                     radio.Checked += CalculateScore;
                     radio.Unchecked += CalculateScore;
                     radio.ToolTip = radio.Tag;
-                    {
-                        var menu = new ContextMenu();
-                        var edit = new MenuItem { Header = "编辑" };
-                        edit.Click += (sender2, e2) =>
-                        {
-                            if (EditForm.Edit(radio))
-                            {
-                                CalculateScore(radio, null);
-                                ((MainWindow)Application.Current.MainWindow).UpdateComment(radio, null);
-                            }
-                        };
-                        menu.Items.Add(edit);
-                        var delete = new MenuItem { Header = "删除" };
-                        delete.Click += (sender3, e3) =>
-                        {
-                            this.Container.Children.Remove(radio);
-                        };
-                        menu.Items.Add(delete);
-                        radio.ContextMenu = menu;
-                    }
+                    radio.Click += ((MainWindow)Application.Current.MainWindow).UpdateComment;
+                    AddContextMenu(radio);
                     break;
                 case TaskBox box:
                     box.ScoreBox.TextChanged += CalculateScore;
@@ -244,26 +208,9 @@ namespace WpfCommentHelper
                 case MarkBox mark:
                     mark.ScoreBox.TextChanged += CalculateScore;
                     mark.ScoreSlider.ValueChanged += CalculateScore;
-                    {
-                        var menu = new ContextMenu();
-                        var edit = new MenuItem { Header = "编辑" };
-                        edit.Click += (sender2, e2) =>
-                        {
-                            if (EditForm.Edit(mark))
-                            {
-                                CalculateScore(mark, null);
-                                ((MainWindow)Application.Current.MainWindow).UpdateComment(mark, null);
-                            }
-                        };
-                        menu.Items.Add(edit);
-                        var delete = new MenuItem { Header = "删除" };
-                        delete.Click += (sender3, e3) =>
-                        {
-                            this.Container.Children.Remove(mark);
-                        };
-                        menu.Items.Add(delete);
-                        mark.ContextMenu = menu;
-                    }
+                    mark.TitleBox.Click += ((MainWindow)Application.Current.MainWindow).UpdateComment;
+                    mark.ScoreSlider.ValueChanged += ((MainWindow)Application.Current.MainWindow).UpdateComment;
+                    AddContextMenu(mark);
                     break;
             }
             if (index == -1)
@@ -272,6 +219,56 @@ namespace WpfCommentHelper
                 Container.Children.Insert(index, elem);
             CalculateScore(this, null);
         }
+
+        /// <summary>
+        /// 为一个 Check，Radio，Mark 子项添加右键菜单
+        /// </summary>
+        private void AddContextMenu(Control control)
+        {
+            var menu = new ContextMenu();
+
+            var edit = new MenuItem { Header = "编辑" };
+            edit.Click += (sender2, e2) =>
+            {
+                if (EditForm.Edit(control))
+                {
+                    CalculateScore(control, null);
+                    ((MainWindow)Application.Current.MainWindow).UpdateComment(control, null);
+                }
+            };
+            menu.Items.Add(edit);
+
+            var insertAbove = new MenuItem { Header = "上方添加..." };
+            insertAbove.Click += (sender4, e4) =>
+            {
+                int index = this.Container.Children.IndexOf(control);
+                var newItem = NewForm.Add(this);
+                if (newItem is null)
+                    return;
+                this.InsertChild(newItem, index);
+            };
+            menu.Items.Add(insertAbove);
+
+            var insertBelow = new MenuItem { Header = "下方添加..." };
+            insertBelow.Click += (sender5, e5) =>
+            {
+                int index = this.Container.Children.IndexOf(control) + 1;
+                var newItem = NewForm.Add(this);
+                if (newItem is null)
+                    return;
+                this.InsertChild(newItem, index);
+            };
+            menu.Items.Add(insertBelow);
+
+            var delete = new MenuItem { Header = "删除" };
+            delete.Click += (sender3, e3) =>
+            {
+                this.Container.Children.Remove(control);
+            };
+            menu.Items.Add(delete);
+            control.ContextMenu = menu;
+        }
+
         /// <summary>
         /// 获取单个元件的批语
         /// </summary>
@@ -403,25 +400,50 @@ namespace WpfCommentHelper
         private void Add_Click(object sender, RoutedEventArgs e)
         {
             var child = NewForm.Add(this);
+            if (child is null)
+                return;
             this.InsertChild(child);
         }
-
+        /// <summary>
+        /// 下方添加
+        /// </summary>
         private void InsertBelow_Click(object sender, RoutedEventArgs e)
         {
             if (this.Owner is null)
                 return;
             var child = NewForm.Add(this.Owner);
+            if (child is null)
+                return;
             int index = this.Owner.Container.Children.IndexOf(this) + 1;
             this.Owner.InsertChild(child, index);
         }
-
+        /// <summary>
+        /// 上方添加
+        /// </summary>
         private void InsertAbove_Click(object sender, RoutedEventArgs e)
         {
             if (this.Owner is null)
                 return;
             var child = NewForm.Add(this.Owner);
+            if (child is null)
+                return;
             int index = this.Owner.Container.Children.IndexOf(this);
             this.Owner.InsertChild(child, index);
+        }
+        /// <summary>
+        /// 获取元件的父节点
+        /// </summary>
+        public static TaskBox GetParentTaskBox(DependencyObject c)
+        {
+            int depth = 4;
+            DependencyObject parent = c;
+            while (depth-- > 0)
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+                if (parent is TaskBox box)
+                    return box;
+            }
+            return null;
         }
     }
 }

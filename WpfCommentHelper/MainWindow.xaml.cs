@@ -43,37 +43,31 @@ namespace WpfCommentHelper
         /// <param name="filename"></param>
         public void ReadXml(string filename)
         {
-            try
+            XDocument doc = XDocument.Load(filename);
+            // root 为一个 task，一定没有分数
+            XElement root = doc.Root;
+
+            TaskBox rootTask = new TaskBox(root.Attribute("title").Value,
+                root.Attribute("score")?.Value,
+                root.Name.ToString(),
+                root.Attribute("desc")?.Value);
+            rootTask.FontSize = 18;
+            // 根节点不能并列添加，不能删除
+            for (int i = 2; i < rootTask.ContextMenu.Items.Count; i++)
             {
-                XDocument doc = XDocument.Load(filename);
-                // root 为一个 task，一定没有分数
-                XElement root = doc.Root;
-
-                TaskBox rootTask = new TaskBox(root.Attribute("title").Value,
-                    root.Attribute("score")?.Value,
-                    root.Name.ToString(),
-                    root.Attribute("desc")?.Value);
-                rootTask.FontSize = 18;
-                // 根节点不能并列添加，不能删除
-                for (int i = 2; i < rootTask.ContextMenu.Items.Count; i++)
-                {
-                    ((MenuItem)rootTask.ContextMenu.Items[i]).IsEnabled = false;
-                }
-
-                AddChildrenFromXElement(rootTask, root);
-
-                CommentPanel.Children.Clear();
-                CommentPanel.Children.Add(rootTask);
-                UpdateComment(this, null);
-
-                FileName = filename;
-                // 修改程序的标题
-                Title = $"{ProgramTitle} - {Path.GetFileNameWithoutExtension(filename)}";
+                ((MenuItem)rootTask.ContextMenu.Items[i]).IsEnabled = false;
             }
-            catch (Exception e)
-            {
-                MessageBox.Show("XML 文件内容有误。\n原因：" + e.Message);
-            }
+
+            AddChildrenFromXElement(rootTask, root);
+
+            CommentPanel.Children.Clear();
+            CommentPanel.Children.Add(rootTask);
+            UpdateComment(this, null);
+
+            FileName = filename;
+            // 修改程序的标题
+            Title = $"{ProgramTitle} - {Path.GetFileNameWithoutExtension(filename)}";
+
         }
         /// <summary>
         /// 将现有批改界面保存为 XML 文件，包含当前的分数
@@ -149,7 +143,6 @@ namespace WpfCommentHelper
                                 Content = title,
                                 Tag = score
                             };
-                            c.Click += UpdateComment;
                             c.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 c.IsChecked = bool.Parse(check);
@@ -161,7 +154,6 @@ namespace WpfCommentHelper
                                 Content = title,
                                 Tag = score
                             };
-                            r.Click += UpdateComment;
                             r.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 r.IsChecked = bool.Parse(check);
@@ -169,9 +161,6 @@ namespace WpfCommentHelper
                             break;
                         case "mark":
                             MarkBox m = new MarkBox(title, elem.Attribute("range").Value, score);
-                            m.TitleBox.Click += UpdateComment;
-                            m.ScoreBox.TextChanged += UpdateComment;
-                            m.ScoreSlider.ValueChanged += UpdateComment;
                             m.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 m.TitleBox.IsChecked = bool.Parse(check);
