@@ -23,6 +23,13 @@ namespace WpfCommentHelper
                 Score = score;
         }
 
+        public MarkBox(string title, string range) : this()
+        {
+            Comment = title;
+            ParseRange(range);
+            Score = Max.ToString();
+        }
+
         public void ParseRange(string range)
         {
             string[] scores = range.Split(',');
@@ -62,7 +69,7 @@ namespace WpfCommentHelper
         public string Score
         {
             get => ScoreBox.Text;
-            private set => ScoreBox.Text = value;
+            set => ScoreBox.Text = value;
         }
         /// <summary>
         /// 获取该打分项的批语
@@ -70,7 +77,7 @@ namespace WpfCommentHelper
         public string Comment
         {
             get => TitleBox.Content.ToString();
-            private set => TitleBox.Content = value;
+            set => TitleBox.Content = value;
         }
         /// <summary>
         /// 最高分数（同时也是默认值）

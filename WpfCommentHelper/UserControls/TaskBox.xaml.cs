@@ -10,6 +10,8 @@ namespace WpfCommentHelper
 {
     public partial class TaskBox : UserControl
     {
+        public TaskBox Owner;
+
         public TaskBox()
         {
             InitializeComponent();
@@ -181,93 +183,93 @@ namespace WpfCommentHelper
         /// <summary>
         /// 为当前题目添加新的子项目
         /// </summary>
-        public void AddChildren(params Control[] children)
+        public void InsertChild(Control elem, int index = -1)
         {
-
-            foreach (var elem in children)
+            switch (elem)
             {
-                switch (elem)
-                {
-                    case CheckBox check:
-                        check.Checked += CalculateScore;
-                        check.Unchecked += CalculateScore;
-                        check.ToolTip = check.Tag;
+                case CheckBox check:
+                    check.Checked += CalculateScore;
+                    check.Unchecked += CalculateScore;
+                    check.ToolTip = check.Tag;
+                    {
+                        var menu = new ContextMenu();
+                        var edit = new MenuItem { Header = "编辑" };
+                        edit.Click += (sender2, e2) =>
                         {
-                            var menu = new ContextMenu();
-                            var edit = new MenuItem { Header = "编辑" };
-                            edit.Click += (sender2, e2) =>
+                            if (EditForm.Edit(check))
                             {
-                                if (EditForm.Edit(check))
-                                {
-                                    CalculateScore(check, null);
-                                    ((MainWindow)Application.Current.MainWindow).UpdateComment(check, null);
-                                }
-                            };
-                            menu.Items.Add(edit);
-                            var delete = new MenuItem { Header = "删除" };
-                            delete.Click += (sender3, e3) =>
-                              {
-                                  (VisualTreeHelper.GetParent(check) as StackPanel).Children.Remove(check);
-                              };
-                            menu.Items.Add(delete);
-                            check.ContextMenu = menu;
-                        }
-                        break;
-                    case RadioButton radio:
-                        radio.Checked += CalculateScore;
-                        radio.Unchecked += CalculateScore;
-                        radio.ToolTip = radio.Tag;
+                                CalculateScore(check, null);
+                                ((MainWindow)Application.Current.MainWindow).UpdateComment(check, null);
+                            }
+                        };
+                        menu.Items.Add(edit);
+                        var delete = new MenuItem { Header = "删除" };
+                        delete.Click += (sender3, e3) =>
+                          {
+                              this.Container.Children.Remove(check);
+                          };
+                        menu.Items.Add(delete);
+                        check.ContextMenu = menu;
+                    }
+                    break;
+                case RadioButton radio:
+                    radio.Checked += CalculateScore;
+                    radio.Unchecked += CalculateScore;
+                    radio.ToolTip = radio.Tag;
+                    {
+                        var menu = new ContextMenu();
+                        var edit = new MenuItem { Header = "编辑" };
+                        edit.Click += (sender2, e2) =>
                         {
-                            var menu = new ContextMenu();
-                            var edit = new MenuItem { Header = "编辑" };
-                            edit.Click += (sender2, e2) =>
+                            if (EditForm.Edit(radio))
                             {
-                                if (EditForm.Edit(radio))
-                                {
-                                    CalculateScore(radio, null);
-                                    ((MainWindow)Application.Current.MainWindow).UpdateComment(radio, null);
-                                }
-                            };
-                            menu.Items.Add(edit);
-                            var delete = new MenuItem { Header = "删除" };
-                            delete.Click += (sender3, e3) =>
-                            {
-                                (VisualTreeHelper.GetParent(radio) as StackPanel).Children.Remove(radio);
-                            };
-                            menu.Items.Add(delete);
-                            radio.ContextMenu = menu;
-                        }
-                        break;
-                    case TaskBox box:
-                        box.ScoreBox.TextChanged += CalculateScore;
-                        break;
-                    case MarkBox mark:
-                        mark.ScoreBox.TextChanged += CalculateScore;
-                        mark.ScoreSlider.ValueChanged += CalculateScore;
+                                CalculateScore(radio, null);
+                                ((MainWindow)Application.Current.MainWindow).UpdateComment(radio, null);
+                            }
+                        };
+                        menu.Items.Add(edit);
+                        var delete = new MenuItem { Header = "删除" };
+                        delete.Click += (sender3, e3) =>
                         {
-                            var menu = new ContextMenu();
-                            var edit = new MenuItem { Header = "编辑" };
-                            edit.Click += (sender2, e2) =>
+                            this.Container.Children.Remove(radio);
+                        };
+                        menu.Items.Add(delete);
+                        radio.ContextMenu = menu;
+                    }
+                    break;
+                case TaskBox box:
+                    box.ScoreBox.TextChanged += CalculateScore;
+                    box.Owner = this;
+                    break;
+                case MarkBox mark:
+                    mark.ScoreBox.TextChanged += CalculateScore;
+                    mark.ScoreSlider.ValueChanged += CalculateScore;
+                    {
+                        var menu = new ContextMenu();
+                        var edit = new MenuItem { Header = "编辑" };
+                        edit.Click += (sender2, e2) =>
+                        {
+                            if (EditForm.Edit(mark))
                             {
-                                if (EditForm.Edit(mark))
-                                {
-                                    CalculateScore(mark, null);
-                                    ((MainWindow)Application.Current.MainWindow).UpdateComment(mark, null);
-                                }
-                            };
-                            menu.Items.Add(edit);
-                            var delete = new MenuItem { Header = "删除" };
-                            delete.Click += (sender3, e3) =>
-                            {
-                                (VisualTreeHelper.GetParent(mark) as StackPanel).Children.Remove(mark);
-                            };
-                            menu.Items.Add(delete);
-                            mark.ContextMenu = menu;
-                        }
-                        break;
-                }
-                Container.Children.Add(elem);
+                                CalculateScore(mark, null);
+                                ((MainWindow)Application.Current.MainWindow).UpdateComment(mark, null);
+                            }
+                        };
+                        menu.Items.Add(edit);
+                        var delete = new MenuItem { Header = "删除" };
+                        delete.Click += (sender3, e3) =>
+                        {
+                            this.Container.Children.Remove(mark);
+                        };
+                        menu.Items.Add(delete);
+                        mark.ContextMenu = menu;
+                    }
+                    break;
             }
+            if (index == -1)
+                Container.Children.Add(elem);
+            else
+                Container.Children.Insert(index, elem);
             CalculateScore(this, null);
         }
         /// <summary>
@@ -377,7 +379,9 @@ namespace WpfCommentHelper
 
             e.Handled = true;
         }
-
+        /// <summary>
+        /// 删除
+        /// </summary>
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
             var parent = VisualTreeHelper.GetParent(this);
@@ -392,6 +396,32 @@ namespace WpfCommentHelper
             {
                 MessageBox.Show("当前为根节点，无法删除。");
             }
+        }
+        /// <summary>
+        /// 添加
+        /// </summary>
+        private void Add_Click(object sender, RoutedEventArgs e)
+        {
+            var child = NewForm.Add(this);
+            this.InsertChild(child);
+        }
+
+        private void InsertBelow_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Owner is null)
+                return;
+            var child = NewForm.Add(this.Owner);
+            int index = this.Owner.Container.Children.IndexOf(this) + 1;
+            this.Owner.InsertChild(child, index);
+        }
+
+        private void InsertAbove_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Owner is null)
+                return;
+            var child = NewForm.Add(this.Owner);
+            int index = this.Owner.Container.Children.IndexOf(this);
+            this.Owner.InsertChild(child, index);
         }
     }
 }

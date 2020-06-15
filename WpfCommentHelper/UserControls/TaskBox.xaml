@@ -9,6 +9,9 @@
     <UserControl.ContextMenu>
         <ContextMenu Name="MyContextMenu" Placement="MousePoint">
             <MenuItem Header="编辑" Click="Edit_Click"/>
+            <MenuItem Header="添加..." Click="Add_Click"/>
+            <MenuItem Header="上方添加..." Click="InsertAbove_Click"/>
+            <MenuItem Header="下方添加..." Click="InsertBelow_Click"/>
             <MenuItem Header="删除" Click="Delete_Click"/>
         </ContextMenu>
     </UserControl.ContextMenu>

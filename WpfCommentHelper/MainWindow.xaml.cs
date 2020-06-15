@@ -54,6 +54,12 @@ namespace WpfCommentHelper
                     root.Name.ToString(),
                     root.Attribute("desc")?.Value);
                 rootTask.FontSize = 18;
+                // 根节点不能并列添加，不能删除
+                for (int i = 2; i < rootTask.ContextMenu.Items.Count; i++)
+                {
+                    ((MenuItem)rootTask.ContextMenu.Items[i]).IsEnabled = false;
+                }
+
                 AddChildrenFromXElement(rootTask, root);
 
                 CommentPanel.Children.Clear();
@@ -135,7 +141,7 @@ namespace WpfCommentHelper
                             TaskBox t = new TaskBox(title, score, type, desc);
                             t.FontSize = task.FontSize > 15 ? task.FontSize - 1 : 15;
                             AddChildrenFromXElement(t, elem);
-                            task.AddChildren(t);
+                            task.InsertChild(t);
                             break;
                         case "check":
                             CheckBox c = new CheckBox
@@ -147,7 +153,7 @@ namespace WpfCommentHelper
                             c.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 c.IsChecked = bool.Parse(check);
-                            task.AddChildren(c);
+                            task.InsertChild(c);
                             break;
                         case "radio":
                             RadioButton r = new RadioButton
@@ -159,7 +165,7 @@ namespace WpfCommentHelper
                             r.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 r.IsChecked = bool.Parse(check);
-                            task.AddChildren(r);
+                            task.InsertChild(r);
                             break;
                         case "mark":
                             MarkBox m = new MarkBox(title, elem.Attribute("range").Value, score);
@@ -169,7 +175,7 @@ namespace WpfCommentHelper
                             m.FontWeight = emphasis ? FontWeights.Bold : FontWeights.Normal;
                             if (check != null)
                                 m.TitleBox.IsChecked = bool.Parse(check);
-                            task.AddChildren(m);
+                            task.InsertChild(m);
                             break;
                     }
                 }
